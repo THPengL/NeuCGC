@@ -24,11 +24,6 @@ def main(config):
 
     logger.info(f"Dataset: {config['dataset']}, lr: {config['lr']}")
     logger.info(f"l1: {config['lambda1']}, l2: {config['lambda2']}, k: {config['k']}, d: {config['out_dim']}")
-    # logger.info(f"- ACC NMI ARI F1")
-    # logger.info(f"\n{np.mean(best_result['acc']) * 100:.2f} ± {np.std(best_result['acc']) * 100:.2f}" +
-    #             f"\n{np.mean(best_result['nmi']) * 100:.2f} ± {np.std(best_result['nmi']) * 100:.2f}" +
-    #             f"\n{np.mean(best_result['ari']) * 100:.2f} ± {np.std(best_result['ari']) * 100:.2f}" +
-    #             f"\n{np.mean(best_result['f1']) * 100:.2f} ± {np.std(best_result['f1']) * 100:.2f}")
     logger.info(f"- ACC: {np.mean(best_result['acc']) * 100:.2f} ± {np.std(best_result['acc']) * 100:.2f}")
     logger.info(f"- NMI: {np.mean(best_result['nmi']) * 100:.2f} ± {np.std(best_result['nmi']) * 100:.2f}")
     logger.info(f"- ARI: {np.mean(best_result['ari']) * 100:.2f} ± {np.std(best_result['ari']) * 100:.2f}")
@@ -57,7 +52,7 @@ if __name__ == '__main__':
         5: "cora", 6: "citeseer", 7: "pubmed", 8: "acm", 9: "dblp", 10: "photo"
     }
     # Set environment
-    args.deviceid = '1'
+    args.deviceid = '0'
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.deviceid)
 
     args.datasetid = 0
@@ -67,14 +62,10 @@ if __name__ == '__main__':
 
     config['train'] = True  # True: 10 seeds; False: 1 seed
 
-    # config['lr'] = 0.00001
     # config['lambda1'] = 1.0
     # config['lambda2'] = 1.0
-    # config['lambda1'] = args.lambda1
-    # config['lambda2'] = args.lambda2
-
+    # config['k'] = 0.1
     # config['out_dim'] = 1000
-    # config['out_dim'] = args.out_dim
 
     config['log_name'] = f"{config['dataset']}_20250624_log.txt"
 
