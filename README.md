@@ -16,6 +16,7 @@ Recently, neighbor-based contrastive learning has been introduced, effectively l
 - numpy==1.26.1
 - torch==1.12.1+cu116
 - tqdm==4.66.1
+- logging==0.5.1.2
 
 
 
