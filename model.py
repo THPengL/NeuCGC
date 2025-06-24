@@ -68,7 +68,6 @@ class Model(nn.Module):
         T_max, _ = torch.max(T_matrix, dim=-1, keepdim=True)
         T_min, _ = torch.min(T_matrix, dim=-1, keepdim=True)
         T_matrix = (T_matrix - T_min) / (T_max - T_min)
-        # xi = torch.trace(T_matrix) / n_sample - 0.1
         xi = torch.trace(T_matrix) / n_sample
         T_matrix = torch.where(adj == 1, T_matrix, 0)
 
