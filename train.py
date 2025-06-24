@@ -1,0 +1,128 @@
+import os
+from tqdm import tqdm
+import numpy as np
+import torch
+from torch import optim
+from model import Model
+from utils import *
+from clustering import clustering
+from evaluation import evaluate
+
+
+def train(config, logger, seeds):
+    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    logger.info("Loading dataset...")
+    data = load_graph_dataset(root='D:\LPeng\work_space\py_space\pytorch112\Demos\Data_demo\datasets',
+                              data_name=config['dataset'],
+                              all_info=True,
+                              remove_self_loop=True)
+
+    config['n_samples'] = data['n_samples']
+    config['n_classes'] = data['n_classes']
+    label_true = data['label']
+    feature = data['feature']
+    adj = data['adj'].toarray()
+    config['n_edges'] = data['n_edges']
+
+    adj = torch.tensor(adj, dtype=torch.int64)
+    adj = adj.fill_diagonal_(0)         # set the diagonal of adj as 0, remove self loop
+
+    input_feature_1 = torch.FloatTensor(feature)
+    input_feature_2 = torch.FloatTensor(feature)
+
+    config['in_dim'] = data['feature'].shape[-1]
+
+    logger.info('Show Config:')
+    for (k, v) in config.items():
+        logger.info(f' {k:>15} : {v}')
+
+    best_result = {
+        'acc': [], 'nmi': [], 'ari': [], 'f1':[],
+    }
+
+    for seed in seeds:
+        set_random_seed(seed)
+        logger.info(f'====================== SEED {seed} ======================')
+        # logger.info(f'============= SEED {seed} ==============')
+
+        model = Model(in_dim=config['in_dim'],
+                      out_dim=config['out_dim'],
+                      dropout=config['dropout'],
+                      device = device)
+        optimizer = optim.Adam(params = model.parameters(), 
+                               lr=float(config['lr']), 
+                               weight_decay=float(config['weight_decay']))
+        # logger.info(model)
+        # logger.info(optimizer)
+
+        model = model.to(device)
+        input_feature_1 = input_feature_1.to(device)
+        input_feature_2 = input_feature_2.to(device)
+        adj = adj.to(device)
+
+        acc_best, nmi_best, ari_best, f1_best, best_epoch = 0.0, 0.0, 0.0, 0.0, 0
+
+        for epoch in tqdm(range(config['epochs'])):
+            model.train()
+            emb_1, emb_2 = model(input_feature_1, input_feature_2)
+            model.compute_emb_sim(emb_1, emb_2)
+
+            if epoch == 0:
+                emb_fusion = get_fusion(z1=emb_1.detach(), z2=emb_2.detach())
+                label_pred, centers, dis = clustering(feature=emb_fusion,
+                                                               cluster_num=config['n_classes'],
+                                                               method='kmeans',
+                                                               device=device)
+            eta = model.compute_eta(adj)
+            pseudo_adj = model.high_confidence_adj(label_pred.copy(),
+                                                 dis,
+                                                 adj,
+                                                 k=config['k'])
+            loss_gda = model.GDA_loss(x_1=emb_1, x_2=emb_2)
+            loss_nca = model.NCA_loss(x_1=emb_1,
+                                      x_2=emb_2,
+                                      adj=adj,
+                                      eta=eta)
+            loss_afc = model.AFC_loss(emb_1, emb_2, H=pseudo_adj)
+
+            loss = loss_nca + config['lambda1'] * loss_afc + config['lambda2'] * loss_gda
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            model.eval()
+            emb_1, emb_2 = model(input_feature_1, input_feature_1)
+
+            emb_fusion = get_fusion(z1=emb_1.detach(),
+                                    z2=emb_2.detach())
+
+            label_pred, centers, dis = clustering(feature=emb_fusion,
+                                          cluster_num=config['n_classes'],
+                                          device=device)
+
+            acc, nmi, ari, f1 = evaluate(label_true, label_pred)
+
+            if acc >= acc_best:
+                acc_best = acc
+                nmi_best = nmi
+                ari_best = ari
+                f1_best = f1
+                best_epoch = epoch+1
+
+            # if epoch == 0 or (epoch+1) % 20 == 0:
+            #     logger.info(
+            #         f"[Epoch {epoch + 1:<3}] loss: {loss.item():.8f}, NCA_loss: {loss_nca.item():.8f}, AFC_loss: {loss_afc.item():.8f}, GDA_loss: {loss_gda.item():.8f}")
+            #     logger.info(f'      ACC: {acc:.4f}, NMI: {nmi:.4f}, ARI: {ari:.4f}, F1: {f1:.4f}, eta: {eta:.4f}')
+
+        logger.info(f'Best: ACC {acc_best:.4f}, NMI {nmi_best:.4f}, ARI {ari_best:.4f}, F1 {f1_best:.4f}')
+
+        best_result['acc'].append(acc_best)
+        best_result['nmi'].append(nmi_best)
+        best_result['ari'].append(ari_best)
+        best_result['f1'].append(f1_best)
+
+    return best_result
+
