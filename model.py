@@ -132,7 +132,6 @@ class Model(nn.Module):
 
 
     def NCA_loss(self, x_1, x_2, adj, eta = 1.0):
-        # Neighborhood distillation using KL divergence for each node.
         dist_matrix = kl_div_matrix(x_1, x_2, device=self.device)
         dist_matrix = (dist_matrix + kl_div_matrix(x_2, x_1, device=self.device).t())
 
