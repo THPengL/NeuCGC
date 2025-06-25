@@ -45,7 +45,6 @@ def train(config, logger, seeds):
     for seed in seeds:
         set_random_seed(seed)
         logger.info(f'====================== SEED {seed} ======================')
-        # logger.info(f'============= SEED {seed} ==============')
 
         model = Model(in_dim=config['in_dim'],
                       out_dim=config['out_dim'],
