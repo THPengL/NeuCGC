@@ -14,7 +14,7 @@ def train(config, logger, seeds):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     logger.info("Loading dataset...")
-    data = load_graph_dataset(root='D:\LPeng\work_space\py_space\pytorch112\Demos\Data_demo\datasets',
+    data = load_graph_dataset(root='./datasets',
                               data_name=config['dataset'],
                               all_info=True,
                               remove_self_loop=True)
