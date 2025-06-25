@@ -12,7 +12,7 @@ def main(config):
     from train import train
     from utils import get_logger
 
-    logger = get_logger(root=f"./training_logs/{config['dataset']}",
+    logger = get_logger(root=f"./logs/{config['dataset']}",
                         filename=config['log_name'])
     # Training
     if config['train']:
@@ -22,8 +22,7 @@ def main(config):
 
     best_result = train(config, logger, seeds)
 
-    logger.info(f"Dataset: {config['dataset']}, lr: {config['lr']}")
-    logger.info(f"l1: {config['lambda1']}, l2: {config['lambda2']}, k: {config['k']}, d: {config['out_dim']}")
+    logger.info(f"Dataset: {config['dataset']}")
     logger.info(f"- ACC: {np.mean(best_result['acc']) * 100:.2f} ± {np.std(best_result['acc']) * 100:.2f}")
     logger.info(f"- NMI: {np.mean(best_result['nmi']) * 100:.2f} ± {np.std(best_result['nmi']) * 100:.2f}")
     logger.info(f"- ARI: {np.mean(best_result['ari']) * 100:.2f} ± {np.std(best_result['ari']) * 100:.2f}")
@@ -67,6 +66,6 @@ if __name__ == '__main__':
     # config['k'] = 0.1
     # config['out_dim'] = 1000
 
-    config['log_name'] = f"{config['dataset']}_20250624_log.txt"
+    config['log_name'] = f"{config['dataset']}_20250610_log.txt"
 
     main(config)
