@@ -93,7 +93,7 @@ def train(config, logger, seeds):
             optimizer.step()
 
             model.eval()
-            emb_1, emb_2 = model(input_feature_1, input_feature_1)
+            emb_1, emb_2 = model(input_feature_1, input_feature_2)
 
             emb_fusion = get_fusion(z1=emb_1.detach(),
                                     z2=emb_2.detach())
