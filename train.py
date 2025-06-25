@@ -111,12 +111,7 @@ def train(config, logger, seeds):
                 f1_best = f1
                 best_epoch = epoch+1
 
-            # if epoch == 0 or (epoch+1) % 20 == 0:
-            #     logger.info(
-            #         f"[Epoch {epoch + 1:<3}] loss: {loss.item():.8f}, NCA_loss: {loss_nca.item():.8f}, AFC_loss: {loss_afc.item():.8f}, GDA_loss: {loss_gda.item():.8f}")
-            #     logger.info(f'      ACC: {acc:.4f}, NMI: {nmi:.4f}, ARI: {ari:.4f}, F1: {f1:.4f}, eta: {eta:.4f}')
-
-        logger.info(f'Best: ACC {acc_best:.4f}, NMI {nmi_best:.4f}, ARI {ari_best:.4f}, F1 {f1_best:.4f}')
+        logger.info(f'ACC {acc_best:.4f}, NMI {nmi_best:.4f}, ARI {ari_best:.4f}, F1 {f1_best:.4f}')
 
         best_result['acc'].append(acc_best)
         best_result['nmi'].append(nmi_best)
