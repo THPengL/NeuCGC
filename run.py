@@ -8,10 +8,11 @@ warnings.simplefilter("ignore")
 
 
 def main(config):
-    # after setting device id.
+    # After setting device id.
     from train import train
     from utils import get_logger
 
+    # Record the results to a file.
     logger = get_logger(root=f"./logs/{config['dataset']}",
                         filename=config['log_name'])
     # Training
