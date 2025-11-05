@@ -1,8 +1,6 @@
 # Official PyTorch Implementation of NeuCGC
 
-**Liang Peng, Yixuan Ye, Cheng Liu\* , Hangjun Che, Man-Fai Leung, Si Wu, and Hau-San Wong. "Trustworthy Neighborhoods Mining: Homophily-Aware Neutral Contrastive Learning for Graph Clustering" (TKDE Submission)**
-
-
+**[Liang Peng, Yixuan Ye, Cheng Liu\* , Hangjun Che, Man-Fai Leung, Si Wu, and Hau-San Wong. "Trustworthy Neighborhoods Mining: Homophily-Aware Neutral Contrastive Learning for Graph Clustering". IEEE Transactions on Knowledge and Data Engineering](https://ieeexplore.ieee.org/abstract/document/11206540)**. 
 
 ## Abstract
 
