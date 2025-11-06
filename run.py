@@ -57,10 +57,10 @@ if __name__ == '__main__':
         5: "cora", 6: "citeseer", 7: "pubmed", 8: "acm", 9: "dblp", 10: "photo"
     }
     # Set environment
-    args.deviceid = '1'
+    args.deviceid = '0'
     os.environ['CUDA_VISIBLE_DEVICES'] = str(args.deviceid)
 
-    args.datasetid = 5
+    args.datasetid = 0
     args.dataset = datasets[args.datasetid]
 
     config = set_default_config(args)
